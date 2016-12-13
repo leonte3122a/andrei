@@ -1,7 +1,7 @@
 <?php
 $hubVerifyToken = 'electrohammer';
-$accessToken="EAAaB82SFkG4BALyb8XiZAa7ZBOsEIM7ZCsmSN46obpbubowtKRJATLdB1kZCP7zJW76HKbD08zVSjQGd9DXHJbwPW2L8J7ZBNLr0DSQQ17ntQXXB4JYKPFiVwbArZC7jnZCbqKP6Fq8ZB5OxRxbYF14vuQ3JjI12muR1t80012lyUQZDZD";
-// check token at setup
+$accessToken="EAAOnMlLekZC0BADgU1QbiZBTn7Ucibbm7UTyV0qLme5enEPq9ciAYp12W9yKTJYMMqQ01MXqzlw7AywfULi0FcP3C94evTFOpMxqQ1GvWqomnTvsKzIKDKjkvySbHYnD2reZCDngXnfgWuA9vCVGqsyZB4HRtoVAYBZBJpborVwZDZD";
+// check token at setupw
 if ($_REQUEST['hub_verify_token'] === $hubVerifyToken) {
   echo $_REQUEST['hub_challenge'];
   exit;
