@@ -2,7 +2,7 @@
 include 'function.php';
 // parameters
 $hubVerifyToken = "electrohammer"; // Verify token
-$accessToken = "EAAFltLH3e2QBADq5RzUT6jpsq3ABZCyKLyvLLdglSRYQYFSp4jeO0EaTX7SvzBbgGmW0oxdpdfZC7ZAmAuIZAkySZCQXZBfmFbFIFHBGrBftXYuuMRhDdtzb2gXHSQw6KBeP4OZCBNixlUZBXr9DkeyZAQkrOl3vNLPs1S26T81kAkAZDZD"; // Page token
+$accessToken = "EAAFmkd01IIUBAH4ZB3PMQHKR63zDwHGFGZCyJGvr6c8NWXl3T2JFV5hzSZC12rf4WfqPVooIKQYklwn4pT81QkSo4jvC67dWTmfhvjklLEJVZCDr0m4JZBktK0sfnZAY5G24KlGRuZBNa3PJCIa8d0L9KGoNs4QfD2XDy68ZAFZBDHQZDZD"; // Page token
 if (file_exists(__DIR__.'/config.php')) {
     $config = include __DIR__.'/config.php';
     $verify_token = $config['verify_token'];
