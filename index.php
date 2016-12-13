@@ -1,33 +1,164 @@
 <?php
 $hubVerifyToken = 'electrohammer';
 $accessToken="EAAZAr6tYkUCcBAEOXoVuOgpI2zWVFETf9SZBTI0pLNjQnCd7tSsxiBm7E59AN7I15Y0kh3DAlH6oO3pGOwZAF7vfGjMZAd5wxp0rfpqc4UuBfrQFMxLtQDvCKxOrYfGsAYwE2H3zTStZClWcMfwT3hfOCUfOuyoPOnRKiFZC8URgZDZD";
-// check token at setupw
+if (file_exists(__DIR__.'/config.php')) {
+    $config = include __DIR__.'/config.php';
+    $verify_token = $config['verify_token'];
+    $token = $config['token'];
+}
+
+require_once(dirname(__FILE__) . '/vendor/autoload.php');
+use pimax\FbBotApp;
+use pimax\Messages\Message;
+use pimax\Messages\ImageMessage;
+use pimax\UserProfile;
+use pimax\Messages\MessageButton;
+use pimax\Messages\StructuredMessage;
+use pimax\Messages\MessageElement;
+use pimax\Messages\MessageReceiptElement;
+use pimax\Messages\Address;
+use pimax\Messages\Summary;
+use pimax\Messages\Adjustment;
+$hubVerifyToken = 'electrohammer';
+$accessToken="EAAaB82SFkG4BALyb8XiZAa7ZBOsEIM7ZCsmSN46obpbubowtKRJATLdB1kZCP7zJW76HKbD08zVSjQGd9DXHJbwPW2L8J7ZBNLr0DSQQ17ntQXXB4JYKPFiVwbArZC7jnZCbqKP6Fq8ZB5OxRxbYF14vuQ3JjI12muR1t80012lyUQZDZD";
+// check token at setup
 if ($_REQUEST['hub_verify_token'] === $hubVerifyToken) {
   echo $_REQUEST['hub_challenge'];
   exit;
 }
 // handle bot's anwser
-$input = json_decode(file_get_contents('php://input'), true);
-$senderId = $input['entry'][0]['messaging'][0]['sender']['id'];
-$messageText = $input['entry'][0]['messaging'][0]['message']['text'];
+$bot = new FbBotApp($token);
 
-if($messageText == "hi") {
-    $answer = "Hello";
-}
-else if($messageText!="")
+
+if (!empty($_REQUEST['hub_mode']) && $_REQUEST['hub_mode'] == 'subscribe' && $_REQUEST['hub_verify_token'] == $verify_token)
 {
-    //$bot->send(new Message($message['sender']['id'], 'This is a simple text message.'));
-    $answer = "I don't understand. Ask me 'hi'";
+     // Webhook setup request
+    echo $_REQUEST['hub_challenge'];
+} else {
+
+     $data = json_decode(file_get_contents("php://input"), true);
+     if (!empty($data['entry'][0]['messaging']))
+     {
+            foreach ($data['entry'][0]['messaging'] as $message)
+            {
+
+if (!empty($message['delivery'])) {
+    continue;
 }
-$response = [
-    'recipient' => [ 'id' => $senderId ],
-    'message' => [ 'text' => $answer ]
-];
-$ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token='.$accessToken);
-curl_setopt($ch, CURLOPT_POST, 1);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
-curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-curl_exec($ch);
-curl_close($ch);
-//based on http://stackoverflow.com/questions/36803518
-?>
+
+$command = "";
+// Receive message from user
+if (!empty($message['message'])) {
+    $command = $message['message']['text'];
+    // OR receive button click
+} else if (!empty($message['postback'])) {
+    $command = $message['postback']['payload'];
+}
+
+// Handle the command
+if($command!="")
+{
+switch ($command) {
+
+    // When bot receive "text"
+    case 'text':
+        $bot->send(new Message($message['sender']['id'], 'This is a simple text message.'));
+        break;
+
+    // When bot receive "button"
+    case 'button':
+      $bot->send(new StructuredMessage($message['sender']['id'],
+          StructuredMessage::TYPE_BUTTON,
+          [
+              'text' => 'Choose category',
+              'buttons' => [
+                  new MessageButton(MessageButton::TYPE_POSTBACK, 'First button'),
+                  new MessageButton(MessageButton::TYPE_POSTBACK, 'Second button'),
+                  new MessageButton(MessageButton::TYPE_POSTBACK, 'Third button')
+              ]
+          ]
+      ));
+    break;
+
+    // When bot receive "generic"
+    case 'generic':
+
+        $bot->send(new StructuredMessage($message['sender']['id'],
+            StructuredMessage::TYPE_GENERIC,
+            [
+                'elements' => [
+                    new MessageElement("First item", "Item description", "", [
+                        new MessageButton(MessageButton::TYPE_POSTBACK, 'First button'),
+                        new MessageButton(MessageButton::TYPE_WEB, 'Web link', 'http://facebook.com')
+                    ]),
+
+                    new MessageElement("Second item", "Item description", "", [
+                        new MessageButton(MessageButton::TYPE_POSTBACK, 'First button'),
+                        new MessageButton(MessageButton::TYPE_POSTBACK, 'Second button')
+                    ]),
+
+                    new MessageElement("Third item", "Item description", "", [
+                        new MessageButton(MessageButton::TYPE_POSTBACK, 'First button'),
+                        new MessageButton(MessageButton::TYPE_POSTBACK, 'Second button')
+                    ])
+                ]
+            ]
+        ));
+
+    break;
+
+    // When bot receive "receipt"
+    case 'receipt':
+
+        $bot->send(new StructuredMessage($message['sender']['id'],
+            StructuredMessage::TYPE_RECEIPT,
+            [
+                'recipient_name' => 'Fox Brown',
+                'order_number' => rand(10000, 99999),
+                'currency' => 'USD',
+                'payment_method' => 'VISA',
+                'order_url' => 'http://facebook.com',
+                'timestamp' => time(),
+                'elements' => [
+                    new MessageReceiptElement("First item", "Item description", "", 1, 300, "USD"),
+                    new MessageReceiptElement("Second item", "Item description", "", 2, 200, "USD"),
+                    new MessageReceiptElement("Third item", "Item description", "", 3, 1800, "USD"),
+                ],
+                'address' => new Address([
+                    'country' => 'US',
+                    'state' => 'CA',
+                    'postal_code' => 94025,
+                    'city' => 'Menlo Park',
+                    'street_1' => '1 Hacker Way',
+                    'street_2' => ''
+                ]),
+                'summary' => new Summary([
+                    'subtotal' => 2300,
+                    'shipping_cost' => 150,
+                    'total_tax' => 50,
+                    'total_cost' => 2500,
+                ]),
+                'adjustments' => [
+                    new Adjustment([
+                        'name' => 'New Customer Discount',
+                        'amount' => 20
+                    ]),
+
+                    new Adjustment([
+                        'name' => '$10 Off Coupon',
+                        'amount' => 10
+                    ])
+                ]
+            ]
+        ));
+
+    break;
+
+    // Other message received
+    default:
+        $bot->send(new Message($message['sender']['id'], 'Sorry. I don’t understand you.'));
+}
+            }
+   }
+}
+}
