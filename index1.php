@@ -1,5 +1,4 @@
 <?php
-include 'function.php';
 // parameters
 $hubVerifyToken = "electrohammer"; // Verify token
 $accessToken = "EAAFmkd01IIUBAH4ZB3PMQHKR63zDwHGFGZCyJGvr6c8NWXl3T2JFV5hzSZC12rf4WfqPVooIKQYklwn4pT81QkSo4jvC67dWTmfhvjklLEJVZCDr0m4JZBktK0sfnZAY5G24KlGRuZBNa3PJCIa8d0L9KGoNs4QfD2XDy68ZAFZBDHQZDZD"; // Page token
